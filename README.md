@@ -1,6 +1,7 @@
 # JS MediaTags ESmodules version
 
-The JavaScript/ESmodules version of [jsmediatags](https://github.com/aadsm/jsmediatags).
+- ID3 tags reader in JavaScript (ID3v1, ID3v2 and AAC) for MP3.
+- The JavaScript/ESmodules version of [jsmediatags](https://github.com/aadsm/jsmediatags).
 
 ## How to use
 
