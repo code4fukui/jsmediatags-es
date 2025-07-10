@@ -1,24 +1,15 @@
 /**
  * @flow
  */
-'use strict';
 
-const StringUtils = require('./StringUtils');
+import { StringUtils, DecodedString } from './StringUtils.js';
 
-import type {
-  DecodedString
-} from './StringUtils';
 
-import type {
-  LoadCallbackType,
-  CharsetType
-} from './FlowTypes';
+export class MediaFileReader {
+  _isInitialized;
+  _size;
 
-class MediaFileReader {
-  _isInitialized: boolean;
-  _size: number;
-
-  constructor(path: any) {
+  constructor(path) {
     this._isInitialized = false;
     this._size = 0;
   }
@@ -26,7 +17,7 @@ class MediaFileReader {
   /**
    * Decides if this media file reader is able to read the given file.
    */
-  static canReadFile(file: any): boolean {
+  static canReadFile(file) {
     throw new Error("Must implement canReadFile function");
   }
 
@@ -34,7 +25,7 @@ class MediaFileReader {
    * This function needs to be called before any other function.
    * Loads the necessary initial information from the file.
    */
-  init(callbacks: LoadCallbackType): void {
+  init(callbacks) { // LoadCallbackType
     var self = this;
 
     if (this._isInitialized) {
@@ -50,7 +41,7 @@ class MediaFileReader {
     }
   }
 
-  _init(callbacks: LoadCallbackType): void {
+  _init(callbacks) { // LoadCallbackType
     throw new Error("Must implement init function");
   }
 
@@ -58,14 +49,14 @@ class MediaFileReader {
    * @param range The start and end indexes of the range to load.
    *        Ex: [0, 7] load bytes 0 to 7 inclusive.
    */
-  loadRange(range: [number, number], callbacks: LoadCallbackType): void {
+  loadRange(range, callbacks) { // [number, number], LoadCallbackType
     throw new Error("Must implement loadRange function");
   }
 
   /**
    * @return The size of the file in bytes.
    */
-  getSize(): number {
+  getSize() {
     if (!this._isInitialized) {
       throw new Error("init() must be called first.");
     }
@@ -73,11 +64,11 @@ class MediaFileReader {
     return this._size;
   }
 
-  getByteAt(offset: number): number {
+  getByteAt(offset) {
     throw new Error("Must implement getByteAt function");
   }
 
-  getBytesAt(offset: number, length: number): Array<number> {
+  getBytesAt(offset, length) {
     var bytes = new Array(length);
     for( var i = 0; i < length; i++ ) {
       bytes[i] = this.getByteAt(offset+i);
@@ -85,12 +76,12 @@ class MediaFileReader {
     return bytes;
   }
 
-  isBitSetAt(offset: number, bit: number): boolean {
+  isBitSetAt(offset, bit) {
     var iByte = this.getByteAt(offset);
     return (iByte & (1 << bit)) != 0;
   }
 
-  getSByteAt(offset: number): number {
+  getSByteAt(offset) {
     var iByte = this.getByteAt(offset);
     if (iByte > 127) {
       return iByte - 256;
@@ -99,7 +90,7 @@ class MediaFileReader {
     }
   }
 
-  getShortAt(offset: number, isBigEndian: boolean): number {
+  getShortAt(offset, isBigEndian) {
     var iShort = isBigEndian
       ? (this.getByteAt(offset) << 8) + this.getByteAt(offset + 1)
       : (this.getByteAt(offset + 1) << 8) + this.getByteAt(offset);
@@ -109,7 +100,7 @@ class MediaFileReader {
     return iShort;
   }
 
-  getSShortAt(offset: number, isBigEndian: boolean): number {
+  getSShortAt(offset, isBigEndian) {
     var iUShort = this.getShortAt(offset, isBigEndian);
     if (iUShort > 32767) {
       return iUShort - 65536;
@@ -118,7 +109,7 @@ class MediaFileReader {
     }
   }
 
-  getLongAt(offset: number, isBigEndian: boolean): number {
+  getLongAt(offset, isBigEndian) {
     var iByte1 = this.getByteAt(offset),
       iByte2 = this.getByteAt(offset + 1),
       iByte3 = this.getByteAt(offset + 2),
@@ -135,7 +126,7 @@ class MediaFileReader {
     return iLong;
   }
 
-  getSLongAt(offset: number, isBigEndian: boolean): number {
+  getSLongAt(offset, isBigEndian) {
     var iULong = this.getLongAt(offset, isBigEndian);
 
     if (iULong > 2147483647) {
@@ -145,7 +136,7 @@ class MediaFileReader {
     }
   }
 
-  getInteger24At(offset: number, isBigEndian: boolean): number {
+  getInteger24At(offset, isBigEndian) {
     var iByte1 = this.getByteAt(offset),
       iByte2 = this.getByteAt(offset + 1),
       iByte3 = this.getByteAt(offset + 2);
@@ -161,7 +152,7 @@ class MediaFileReader {
     return iInteger;
   }
 
-  getStringAt(offset: number, length: number): string {
+  getStringAt(offset, length) {
     var string = [];
     for (var i = offset, j = 0; i < offset+length; i++, j++) {
       string[j] = String.fromCharCode(this.getByteAt(i));
@@ -170,10 +161,10 @@ class MediaFileReader {
   }
 
   getStringWithCharsetAt(
-    offset: number,
-    length: number,
-    charset: ?CharsetType
-  ): DecodedString {
+    offset,
+    length,
+    charset
+  ) { // : DecodedString
     var bytes = this.getBytesAt(offset, length);
     var string;
 
@@ -196,7 +187,7 @@ class MediaFileReader {
     return string;
   }
 
-  getCharAt(offset: number): string {
+  getCharAt(offset) {
     return String.fromCharCode(this.getByteAt(offset));
   }
 
@@ -206,7 +197,7 @@ class MediaFileReader {
    * bits. The zeroed bits are ignored, so a 257 bytes long tag is represented
    * as $00 00 02 01.
    */
-  getSynchsafeInteger32At(offset: number): number {
+  getSynchsafeInteger32At(offset) {
     var size1 = this.getByteAt(offset);
     var size2 = this.getByteAt(offset+1);
     var size3 = this.getByteAt(offset+2);
@@ -220,5 +211,3 @@ class MediaFileReader {
     return size;
   }
 }
-
-module.exports = MediaFileReader;
