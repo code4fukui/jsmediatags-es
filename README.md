@@ -1,6 +1,6 @@
-# JS MediaTags ESmodules
+# JS MediaTags ESmodules version
 
-The JavaScript/ESmodules version of https://github.com/aadsm/jsmediatags
+The JavaScript/ESmodules version of [jsmediatags](https://github.com/aadsm/jsmediatags).
 
 ## How to use
 
