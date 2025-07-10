@@ -1,7 +1,3 @@
-/**
- * @flow
- */
-
 //const MediaFileReader = require("./MediaFileReader");
 /*
 const XhrFileReader = require("./XhrFileReader");

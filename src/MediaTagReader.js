@@ -1,7 +1,3 @@
-/**
- * @flow
- */
-
 export class MediaTagReader {
   _mediaFileReader;
   _tags; //  ?Array<string>;

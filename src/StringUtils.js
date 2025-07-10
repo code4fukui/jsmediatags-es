@@ -1,7 +1,3 @@
-/**
- * @flow
- */
-
 class InternalDecodedString {
   _value;
   bytesReadCount;

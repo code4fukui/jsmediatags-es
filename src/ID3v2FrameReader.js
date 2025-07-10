@@ -1,7 +1,3 @@
-/**
- * @flow
- */
-
 import { MediaFileReader } from './MediaFileReader.js';
 import { StringUtils } from './StringUtils.js';
 import { ArrayFileReader } from './ArrayFileReader.js';

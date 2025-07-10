@@ -1,7 +1,3 @@
-/**
- * @flow
- */
-
 import { StringUtils } from './StringUtils.js';
 
 export class MediaFileReader {

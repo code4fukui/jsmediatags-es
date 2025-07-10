@@ -1,7 +1,3 @@
-/**
- * @flow
- */
-
 import { MediaTagReader } from './MediaTagReader.js';
 /*
 var MediaFileReader = require('./MediaFileReader');
