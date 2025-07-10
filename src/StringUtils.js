@@ -3,17 +3,17 @@
  */
 
 class InternalDecodedString {
-  _value: string;
-  bytesReadCount: number;
-  length: number;
+  _value;
+  bytesReadCount;
+  length;
 
-  constructor(value: string, bytesReadCount: number) {
+  constructor(value, bytesReadCount) {
     this._value = value;
     this.bytesReadCount = bytesReadCount;
     this.length = value.length;
   }
 
-  toString(): string {
+  toString() {
     return this._value;
   }
 }
@@ -22,9 +22,9 @@ export const DecodedString = InternalDecodedString;
 
 export var StringUtils = {
   readUTF16String: function(
-    bytes: Array<number>,
-    bigEndian: boolean,
-    maxBytes?: number
+    bytes,
+    bigEndian,
+    maxBytes
   ): DecodedString {
     var ix = 0;
     var offset1 = 1, offset2 = 0;
@@ -65,8 +65,8 @@ export var StringUtils = {
   },
 
   readUTF8String: function(
-    bytes: Array<number>,
-    maxBytes?: number
+    bytes,
+    maxBytes
   ): DecodedString {
     var ix = 0;
     maxBytes = Math.min(maxBytes||bytes.length, bytes.length);
@@ -104,8 +104,8 @@ export var StringUtils = {
   },
 
   readNullTerminatedString: function(
-    bytes: Array<number>,
-    maxBytes?: number
+    bytes,
+    maxBytes
   ): DecodedString {
     var arr = [];
     maxBytes = maxBytes || bytes.length;
