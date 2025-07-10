@@ -48,7 +48,7 @@ class ReactNativeFileReader extends MediaFileReader {
       })
   }
 
-  loadRange(range: [number, number], callbacks: LoadCallbackType) {
+  loadRange(range, callbacks) { // : [number, number], LoadCallbackType
     var fd = -1;
     var self = this;
     var fileData = this._fileData;

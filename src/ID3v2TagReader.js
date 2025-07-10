@@ -1,12 +1,14 @@
 /**
  * @flow
  */
-'use strict';
 
-var MediaTagReader = require('./MediaTagReader');
+import { MediaTagReader } from './MediaTagReader.js';
+/*
 var MediaFileReader = require('./MediaFileReader');
-var ID3v2FrameReader = require('./ID3v2FrameReader');
+*/
+import { ID3v2FrameReader } from './ID3v2FrameReader.js';
 
+/*
 import type {
   CallbackType,
   LoadCallbackType,
@@ -18,11 +20,12 @@ import type {
   ByteRange,
   TagType,
 } from './FlowTypes';
+*/
 
 const ID3_HEADER_SIZE = 10;
 
-class ID3v2TagReader extends MediaTagReader {
-  static getTagIdentifierByteRange(): ByteRange {
+export class ID3v2TagReader extends MediaTagReader {
+  static getTagIdentifierByteRange() { // : ByteRange
     // ID3 header
     return {
       offset: 0,
@@ -30,12 +33,12 @@ class ID3v2TagReader extends MediaTagReader {
     };
   }
 
-  static canReadTagFormat(tagIdentifier: Array<number>): boolean {
+  static canReadTagFormat(tagIdentifier) { // }: Array<number>): boolean {
     var id = String.fromCharCode.apply(String, tagIdentifier.slice(0, 3));
     return id === 'ID3';
   }
 
-  _loadData(mediaFileReader: MediaFileReader, callbacks: LoadCallbackType) {
+  _loadData(mediaFileReader, callbacks) { // MediaFileReader, LoadCallbackType
     mediaFileReader.loadRange([6, 9], {
       onSuccess: function() {
         mediaFileReader.loadRange(
@@ -48,7 +51,7 @@ class ID3v2TagReader extends MediaTagReader {
     });
   }
 
-  _parseData(data: MediaFileReader, tags: ?Array<string>): TagType {
+  _parseData(data, tags) { // MediaFileReader, ?Array<string> -> TagType
     var offset = 0;
     var major = data.getByteAt(offset+3);
     if (major > 4) { return {"type": "ID3", "version": ">2.4", "tags": {}}; }
@@ -118,7 +121,7 @@ class ID3v2TagReader extends MediaTagReader {
     return id3;
   }
 
-  _getFrameData(frames: TagFrames, ids: Array<string>): ?Object {
+  _getFrameData(frames, ids) { // TagFrames, : Array<string>): ?Object
     var frame;
     for (var i = 0, id; id = ids[i]; i++) {
       if (id in frames) {
@@ -132,7 +135,7 @@ class ID3v2TagReader extends MediaTagReader {
     }
   }
 
-  getShortcuts(): {[key: string]: string|Array<string>} {
+  getShortcuts() { // : {[key: string]: string|Array<string>}
     return SHORTCUTS;
   }
 }
@@ -150,4 +153,3 @@ const SHORTCUTS = {
   "lyrics"    : ["USLT", "ULT"]
 };
 
-module.exports = ID3v2TagReader;

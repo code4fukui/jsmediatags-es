@@ -9,19 +9,13 @@
  *
  * @flow
  */
-'use strict';
 
 const NOT_FOUND = -1;
 
-import type {
-  ChunkType,
-  DataType
-} from './FlowTypes';
-
-class ChunkedFileData {
+export class ChunkedFileData {
   // $FlowIssue - get/set properties not yet supported
   static get NOT_FOUND() { return NOT_FOUND; }
-  _fileData: Array<ChunkType>;
+  _fileData;
 
   constructor() {
     this._fileData = [];
@@ -30,7 +24,7 @@ class ChunkedFileData {
   /**
    * Adds data to the file storage at a specific offset.
    */
-  addData(offset: number, data: DataType): void {
+  addData(offset, data) { // : DataType
     var offsetEnd = offset+data.length-1;
     var chunkRange = this._getChunkRange(offset, offsetEnd);
 
@@ -80,7 +74,7 @@ class ChunkedFileData {
     }
   }
 
-  _concatData(dataA: DataType, dataB: DataType): DataType {
+  _concatData(dataA, dataB) { // : DataType x : DataType -> : DataType
     // TypedArrays don't support concat.
     if (
       typeof ArrayBuffer !== "undefined" && ArrayBuffer.isView &&
@@ -99,7 +93,7 @@ class ChunkedFileData {
     }
   }
 
-  _sliceData(data: DataType, begin: number, end: number): DataType {
+  _sliceData(data, begin, end) { // : DataType -> : DataType
     // Some TypeArray implementations do not support slice yet.
     if (data.slice) {
       return data.slice(begin, end);
@@ -118,9 +112,9 @@ class ChunkedFileData {
    * NOT_FOUND).
    */
   _getChunkRange(
-    offsetStart: number,
-    offsetEnd: number
-  ): {startIx: number, endIx: number, insertIx?: number} {
+    offsetStart,
+    offsetEnd
+  )  { // ret  - : {startIx, endIx, insertIx}
     var startChunkIx = NOT_FOUND;
     var endChunkIx = NOT_FOUND;
     var insertIx = 0;
@@ -177,7 +171,7 @@ class ChunkedFileData {
     };
   }
 
-  hasDataRange(offsetStart: number, offsetEnd: number): boolean {
+  hasDataRange(offsetStart, offsetEnd) {
     for (var i = 0; i < this._fileData.length; i++) {
       var chunk = this._fileData[i];
       if (offsetEnd < chunk.offset) {
@@ -193,7 +187,7 @@ class ChunkedFileData {
     return false;
   }
 
-  getByteAt(offset: number): any {
+  getByteAt(offset) {
     var dataChunk;
 
     for (var i = 0; i < this._fileData.length; i++) {
@@ -213,5 +207,3 @@ class ChunkedFileData {
     throw new Error("Offset " + offset + " hasn't been loaded yet.");
   }
 }
-
-module.exports = ChunkedFileData;

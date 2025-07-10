@@ -1,32 +1,27 @@
 /**
  * @flow
  */
-'use strict';
 
-const MediaFileReader = require("./MediaFileReader");
+//const MediaFileReader = require("./MediaFileReader");
+/*
 const XhrFileReader = require("./XhrFileReader");
 const BlobFileReader = require("./BlobFileReader");
-const ArrayFileReader = require("./ArrayFileReader");
+*/
+import { ArrayFileReader } from "./ArrayFileReader.js";
+/*
 const MediaTagReader = require("./MediaTagReader");
-const ID3v1TagReader = require("./ID3v1TagReader");
-const ID3v2TagReader = require("./ID3v2TagReader");
+*/
+import { ID3v1TagReader } from "./ID3v1TagReader.js";
+import { ID3v2TagReader } from "./ID3v2TagReader.js";
+/*
 const MP4TagReader = require("./MP4TagReader");
 const FLACTagReader = require("./FLACTagReader");
+*/
 
-import type {
-  CallbackType,
-  LoadCallbackType,
-  ByteRange
-} from './FlowTypes';
+var mediaFileReaders = []; // : Array<Class<MediaFileReader>>
+var mediaTagReaders = []; // : Array<Class<MediaTagReader>>
 
-var mediaFileReaders: Array<Class<MediaFileReader>> = [];
-var mediaTagReaders: Array<Class<MediaTagReader>> = [];
-
-function read(location: Object, callbacks: CallbackType) {
-  new Reader(location).read(callbacks);
-}
-
-function isRangeValid(range: ByteRange, fileSize: number) {
+function isRangeValid(range, fileSize) { // ByteRange
   const invalidPositiveRange = range.offset >= 0
     && range.offset + range.length >= fileSize
 
@@ -36,42 +31,42 @@ function isRangeValid(range: ByteRange, fileSize: number) {
   return !(invalidPositiveRange || invalidNegativeRange)
 }
 
-class Reader {
-  _file: any;
-  _tagsToRead: Array<string>;
-  _fileReader: Class<MediaFileReader>;
-  _tagReader: Class<MediaTagReader>;
+export class Reader {
+  _file;
+  _tagsToRead;
+  _fileReader; // : Class<MediaFileReader>
+  _tagReader; // Class<MediaTagReader>; 
 
-  constructor(file: any) {
+  constructor(file) {
     this._file = file;
   }
 
-  setTagsToRead(tagsToRead: Array<string>): Reader {
+  setTagsToRead(tagsToRead) { // Reader
     this._tagsToRead = tagsToRead;
     return this;
   }
 
-  setFileReader(fileReader: Class<MediaFileReader>): Reader {
+  setFileReader(fileReader) { // }: Class<MediaFileReader>): Reader {
     this._fileReader = fileReader;
     return this;
   }
 
-  setTagReader(tagReader: Class<MediaTagReader>): Reader {
+  setTagReader(tagReader) { // }: Class<MediaTagReader>): Reader {
     this._tagReader = tagReader;
     return this;
   }
 
-  read(callbacks: CallbackType) {
+  read(callbacks) { // CallbackType
     var FileReader = this._getFileReader();
     var fileReader = new FileReader(this._file);
     var self = this;
 
     fileReader.init({
-      onSuccess: function() {
-        self._getTagReader(fileReader, {
-          onSuccess: function(TagReader: Class<MediaTagReader>) {
+      onSuccess: () => {
+        this._getTagReader(fileReader, {
+          onSuccess: function(TagReader) { // : Class<MediaTagReader>
             new TagReader(fileReader)
-              .setTagsToRead(self._tagsToRead)
+              .setTagsToRead(this._tagsToRead)
               .read(callbacks);
           },
           onError: callbacks.onError
@@ -81,7 +76,7 @@ class Reader {
     });
   }
 
-  _getFileReader(): Class<MediaFileReader> {
+  _getFileReader() { // : Class<MediaFileReader>
     if (this._fileReader) {
       return this._fileReader;
     } else {
@@ -89,7 +84,7 @@ class Reader {
     }
   }
 
-  _findFileReader(): Class<MediaFileReader> {
+  _findFileReader() { // : Class<MediaFileReader>
     for (var i = 0; i < mediaFileReaders.length; i++) {
       if (mediaFileReaders[i].canReadFile(this._file)) {
         return mediaFileReaders[i];
@@ -99,7 +94,7 @@ class Reader {
     throw new Error("No suitable file reader found for " + this._file);
   }
 
-  _getTagReader(fileReader: MediaFileReader, callbacks: CallbackType) {
+  _getTagReader(fileReader, callbacks) { // MediaFileReader, CallbackType
     if (this._tagReader) {
       var tagReader = this._tagReader;
       setTimeout(function() {
@@ -110,7 +105,7 @@ class Reader {
     }
   }
 
-  _findTagReader(fileReader: MediaFileReader, callbacks: CallbackType) {
+  _findTagReader(fileReader, callbacks) { // MediaFileReader, CallbackType
     // We don't want to make multiple fetches per tag reader to get the tag
     // identifier. The strategy here is to combine all the tag identifier
     // ranges into one and make a single fetch. This is particularly important
@@ -193,9 +188,9 @@ class Reader {
   }
 
   _loadTagIdentifierRanges(
-    fileReader: MediaFileReader,
-    tagReaders: Array<Class<MediaTagReader>>,
-    callbacks: LoadCallbackType
+    fileReader, // : MediaFileReader,
+    tagReaders, //: Array<Class<MediaTagReader>>,
+    callbacks, //: LoadCallbackType
   ) {
     if (tagReaders.length === 0) {
       // Force async
@@ -222,18 +217,18 @@ class Reader {
   }
 }
 
-class Config {
-  static addFileReader(fileReader: Class<MediaFileReader>): Class<Config> {
+export class Config {
+  static addFileReader(fileReader) { // }: Class<MediaFileReader>): Class<Config> {
     mediaFileReaders.push(fileReader);
     return Config;
   }
 
-  static addTagReader(tagReader: Class<MediaTagReader>): Class<Config> {
+  static addTagReader(tagReader) { // }: Class<MediaTagReader>): Class<Config> {
     mediaTagReaders.push(tagReader);
     return Config;
   }
 
-  static removeTagReader(tagReader: Class<MediaTagReader>): Class<Config> {
+  static removeTagReader(tagReader) { // }: Class<MediaTagReader>): Class<Config> {
     var tagReaderIx = mediaTagReaders.indexOf(tagReader);
 
     if (tagReaderIx >= 0) {
@@ -242,35 +237,37 @@ class Config {
 
     return Config;
   }
-
+  /*
   static EXPERIMENTAL_avoidHeadRequests() {
     XhrFileReader.setConfig({
       avoidHeadRequests: true
     });
   }
 
-  static setDisallowedXhrHeaders(disallowedXhrHeaders: Array<string>) {
+  static setDisallowedXhrHeaders(disallowedXhrHeaders) {
     XhrFileReader.setConfig({
       disallowedXhrHeaders: disallowedXhrHeaders
     });
   }
 
-  static setXhrTimeoutInSec(timeoutInSec: number) {
+  static setXhrTimeoutInSec(timeoutInSec) {
     XhrFileReader.setConfig({
       timeoutInSec: timeoutInSec
     });
   }
+  */
 }
 
 Config
-  .addFileReader(XhrFileReader)
-  .addFileReader(BlobFileReader)
+  //.addFileReader(XhrFileReader)
+  //.addFileReader(BlobFileReader)
   .addFileReader(ArrayFileReader)
   .addTagReader(ID3v2TagReader)
   .addTagReader(ID3v1TagReader)
-  .addTagReader(MP4TagReader)
-  .addTagReader(FLACTagReader);
+  //.addTagReader(MP4TagReader)
+  //.addTagReader(FLACTagReader);
 
+/*
 if (typeof process !== "undefined" && !process.browser) {
   if (typeof navigator !== "undefined" && navigator.product === "ReactNative") {
     const ReactNativeFileReader = require('./ReactNativeFileReader');
@@ -280,9 +277,8 @@ if (typeof process !== "undefined" && !process.browser) {
     Config.addFileReader(NodeFileReader);
   }
 }
+*/
 
-module.exports = {
-  "read": read,
-  "Reader": Reader,
-  "Config": Config
-};
+export function read(location, callbacks) { // Object -> CallbackType
+  new Reader(location).read(callbacks);
+}

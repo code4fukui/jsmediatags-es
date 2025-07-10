@@ -1,48 +1,48 @@
 /**
  * @flow
  */
-'use strict';
 
-var MediaFileReader = require('./MediaFileReader');
+import { MediaFileReader } from './MediaFileReader.js';
 
+/*
 import type {
   Byte,
   ByteArray,
   LoadCallbackType
 } from './FlowTypes';
+*/
 
-class ArrayFileReader extends MediaFileReader {
-  _array: ByteArray;
-  _size: number;
+export class ArrayFileReader extends MediaFileReader {
+  _array;
+  _size;
 
-  constructor(array: ByteArray) {
+  constructor(array) {
     super();
     this._array = array;
     this._size = array.length;
     this._isInitialized = true;
   }
 
-  static canReadFile(file: any): boolean {
+  static canReadFile(file) { // -> boolean
     return (
       Array.isArray(file) ||
-      (typeof Buffer === 'function' && Buffer.isBuffer(file))
+      //(typeof Buffer === 'function' && Buffer.isBuffer(file))
+      file instanceof Uint8Array
     );
   }
 
-  init(callbacks: LoadCallbackType) {
+  init(callbacks) { // : LoadCallbackType
     setTimeout(callbacks.onSuccess, 0);
   }
 
-  loadRange(range: [number, number], callbacks: LoadCallbackType) {
+  loadRange(range, callbacks) { // : [number, number], LoadCallbackType
     setTimeout(callbacks.onSuccess, 0);
   }
 
-  getByteAt(offset: number): Byte {
+  getByteAt(offset) { // number -> Byte
     if (offset >= this._array.length) {
       throw new Error("Offset " + offset + " hasn't been loaded yet.");
     }
     return this._array[offset];
   }
 }
-
-module.exports = ArrayFileReader;

@@ -1,12 +1,12 @@
 /**
  * @flow
  */
-'use strict';
 
-var MediaFileReader = require('./MediaFileReader');
-const StringUtils = require('./StringUtils');
-var ArrayFileReader = require('./ArrayFileReader');
+import { MediaFileReader } from './MediaFileReader.js';
+import { StringUtils } from './StringUtils.js';
+import { ArrayFileReader } from './ArrayFileReader.js';
 
+/*
 import type {
   CharsetType,
   FrameReaderSignature,
@@ -15,6 +15,7 @@ import type {
   TagFrameHeader,
   TagFrameFlags
 } from './FlowTypes';
+*/
 
 const FRAME_DESCRIPTIONS = {
   // v2.2
@@ -175,8 +176,8 @@ const FRAME_DESCRIPTIONS = {
   "WXXX" : "User defined URL link frame"
 };
 
-class ID3v2FrameReader {
-  static getFrameReaderFunction(frameId: string): ?FrameReaderSignature {
+export class ID3v2FrameReader {
+  static getFrameReaderFunction(frameId) { // string -> ?FrameReaderSignature
     if (frameId in frameReaderFunctions) {
       return frameReaderFunctions[frameId];
     } else if (frameId[0] === "T") {
@@ -202,12 +203,12 @@ class ID3v2FrameReader {
    * frame header (frame size - 10).
    */
   static readFrames(
-    offset: number,
-    end: number,
-    data: MediaFileReader,
-    id3header: TagHeader,
-    tags: ?Array<string>
-  ): TagFrames {
+    offset,
+    end,
+    data, // MediaFileReader,
+    id3header, //: TagHeader,
+    tags, //: ?Array<string>
+  ) { // : TagFrames
     var frames = {};
     var frameHeaderSize = this._getFrameHeaderSize(id3header);
     // console.log('header', id3header);
@@ -287,7 +288,7 @@ class ID3v2FrameReader {
     return frames;
   }
 
-  static _getFrameHeaderSize(id3header: TagHeader): number {
+  static _getFrameHeaderSize(id3header) { // TagHeader
     var major = id3header.major;
 
     if (major == 2) {
@@ -300,10 +301,10 @@ class ID3v2FrameReader {
   }
 
   static _readFrameHeader(
-    data: MediaFileReader,
-    offset: number,
-    id3header: TagHeader
-  ): TagFrameHeader {
+    data, // : MediaFileReader,
+    offset,
+    id3header, // : TagHeader
+  ) { // }: TagFrameHeader {
     var major = id3header.major;
     var flags = null;
     var frameHeaderSize = this._getFrameHeaderSize(id3header);
@@ -348,7 +349,7 @@ class ID3v2FrameReader {
     };
   }
 
-  static _readFrameFlags(data: MediaFileReader, offset: number): TagFrameFlags {
+  static _readFrameFlags(data, offset) { // MediaFileReader -> TagFrameFlags
     return {
       message: {
         tag_alter_preservation  : data.isBitSetAt(offset, 6),
@@ -365,7 +366,7 @@ class ID3v2FrameReader {
     };
   }
 
-  static _getFrameDescription(frameId: string): string {
+  static _getFrameDescription(frameId) {
     if (frameId in FRAME_DESCRIPTIONS) {
       return FRAME_DESCRIPTIONS[frameId];
     } else {
@@ -374,10 +375,10 @@ class ID3v2FrameReader {
   }
 
   static getUnsyncFileReader(
-    data: MediaFileReader,
-    offset: number,
-    size: number
-  ): MediaFileReader {
+    data, //: MediaFileReader,
+    offset,
+    size
+  ) { // MediaFileReader
     var frameData = data.getBytesAt(offset, size);
     for (var i = 0; i < frameData.length - 1; i++) {
       if (frameData[i] === 0xff && frameData[i+1] === 0x00) {
@@ -392,12 +393,12 @@ class ID3v2FrameReader {
 var frameReaderFunctions = {};
 
 frameReaderFunctions['APIC'] = function readPictureFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): any {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags, // : ?Object,
+  id3header, // ?: TagHeader
+) {
   var start = offset;
   var charset = getTextEncoding(data.getByteAt(offset));
   switch (id3header && id3header.major) {
@@ -431,12 +432,12 @@ frameReaderFunctions['APIC'] = function readPictureFrame(
 
 // ID3v2 chapters according to http://id3.org/id3v2-chapters-1.0
 frameReaderFunctions['CHAP'] = function readChapterFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): any {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags,// : ?Object,
+  id3header, // ?: TagHeader
+) {
   var originalOffset = offset;
   var result = {};
   var id = StringUtils.readNullTerminatedString(data.getBytesAt(offset, length));
@@ -458,12 +459,13 @@ frameReaderFunctions['CHAP'] = function readChapterFrame(
 
 // ID3v2 table of contents according to http://id3.org/id3v2-chapters-1.0
 frameReaderFunctions['CTOC'] = function readTableOfContentsFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): any {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags, //: ?Ob
+  ject,
+  id3header, // ?: TagHeader
+) {
   var originalOffset = offset;
   var result = { childElementIds: [], id: undefined, topLevel: undefined, ordered: undefined, entryCount: undefined, subFrames: undefined };
   var id = StringUtils.readNullTerminatedString(data.getBytesAt(offset, length));
@@ -486,12 +488,12 @@ frameReaderFunctions['CTOC'] = function readTableOfContentsFrame(
 }
 
 frameReaderFunctions['COMM'] = function readCommentsFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): any {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags, //: ?Object,
+  id3header, //?: TagHeader
+) {
   var start = offset;
   var charset = getTextEncoding(data.getByteAt(offset));
   var language = data.getStringAt( offset+1, 3 );
@@ -510,22 +512,22 @@ frameReaderFunctions['COMM'] = function readCommentsFrame(
 frameReaderFunctions['COM'] = frameReaderFunctions['COMM'];
 
 frameReaderFunctions['PIC'] = function(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): any {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags, //: ?Object,
+  id3header, // ?: TagHeader
+) {
   return frameReaderFunctions['APIC'](offset, length, data, flags, id3header);
 };
 
 frameReaderFunctions['PCNT'] = function readCounterFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): any {
+  offset,
+  length,
+  data, // MediaFileReader,
+  flags, //: ?Object,
+  id3header, // ?: TagHeader
+) {
   // FIXME: implement the rest of the spec
   return data.getLongAt(offset, false);
 };
@@ -533,12 +535,12 @@ frameReaderFunctions['PCNT'] = function readCounterFrame(
 frameReaderFunctions['CNT'] = frameReaderFunctions['PCNT'];
 
 frameReaderFunctions['SYLT'] = function readSynchronizedLyricsFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): any {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags, //: ?Object,
+  id3header, // ?: TagHeader
+) {
   var start = offset;
   var contentTypes = ['other', 'lyrics', 'transcription', 'movement', 'events', 'chord', 'trivia'];
   var timeStampFormats = ['unset', 'frames', 'milliseconds'];
@@ -575,36 +577,36 @@ frameReaderFunctions['SYLT'] = function readSynchronizedLyricsFrame(
 };
 
 frameReaderFunctions['T*'] = function readTextFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): any {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags, //: ?Object,
+  id3header, // ?: TagHeader
+) {
   var charset = getTextEncoding(data.getByteAt(offset));
 
   return data.getStringWithCharsetAt(offset+1, length-1, charset).toString();
 };
 
 frameReaderFunctions['TXXX'] = function readTextFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): Object {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags, //: ?Object,
+  id3header, //?: TagHeader
+) { // -> Object
   var charset = getTextEncoding(data.getByteAt(offset));
 
   return getUserDefinedFields(offset, length, data, charset);
 };
 
 frameReaderFunctions['WXXX'] = function readUrlFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): ?Object {
+  offset,
+  length,
+  data, // MediaFileReader,
+  flags, // ?Object,
+  id3header, //?: TagHeader
+) { // : ?Object
   if (length === 0) {
     return null;
   }
@@ -613,12 +615,12 @@ frameReaderFunctions['WXXX'] = function readUrlFrame(
 };
 
 frameReaderFunctions['W*'] = function readUrlFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): ?string {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags, //: ?Object,
+  id3header, //?: TagHeader
+) { // }: ?string {
   if (length === 0) {
     return null;
   }
@@ -626,24 +628,24 @@ frameReaderFunctions['W*'] = function readUrlFrame(
 };
 
 frameReaderFunctions['TCON'] = function readGenreFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object
-): any {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags, //: ?Object
+) {
   var text = frameReaderFunctions['T*'].apply(this, arguments);
-  return (text: string).replace(/^\(\d+\)/, '');
+  return (text).replace(/^\(\d+\)/, '');
 };
 
 frameReaderFunctions['TCO'] = frameReaderFunctions['TCON'];
 
 frameReaderFunctions['USLT'] = function readLyricsFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): any {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags, //: ?Object,
+  id3header, //?: TagHeader
+) {
   var start = offset;
   var charset = getTextEncoding(data.getByteAt(offset));
   var language = data.getStringAt(offset+1, 3);
@@ -662,12 +664,12 @@ frameReaderFunctions['USLT'] = function readLyricsFrame(
 frameReaderFunctions['ULT'] = frameReaderFunctions['USLT'];
 
 frameReaderFunctions['UFID'] = function readLyricsFrame(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  flags: ?Object,
-  id3header?: TagHeader
-): any {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags, //: ?Object,
+  id3header, //?: TagHeader
+) {
   var ownerIdentifier =
     StringUtils.readNullTerminatedString(data.getBytesAt(offset, length));
   offset += ownerIdentifier.bytesReadCount;
@@ -681,8 +683,8 @@ frameReaderFunctions['UFID'] = function readLyricsFrame(
   };
 };
 
-function getTextEncoding(bite): CharsetType {
-  var charset: ?CharsetType;
+function getTextEncoding(bite) { // : CharsetType
+  var charset; // : ?CharsetType;
 
   switch (bite)
   {
@@ -712,11 +714,12 @@ function getTextEncoding(bite): CharsetType {
 // Handles reading description/data from either http://id3.org/id3v2.3.0#User_defined_text_information_frame
 // and http://id3.org/id3v2.3.0#User_defined_URL_link_frame
 function getUserDefinedFields(
-  offset: number,
-  length: number,
-  data: MediaFileReader,
-  charset: CharsetType
-): Object {
+  offset,
+  length,
+  data, //: MediaFileReader,
+  flags, //: ?Object,
+  id3header, //?: TagHeader
+) { // : Object
   var userDesc = data.getStringWithCharsetAt(offset + 1, length - 1, charset);
   var userDefinedData = data.getStringWithCharsetAt(offset + 1 + userDesc.bytesReadCount, length - 1 - userDesc.bytesReadCount, charset);
 
@@ -749,5 +752,3 @@ var PICTURE_TYPE = [
   "Band/artist logotype",
   "Publisher/Studio logotype"
 ];
-
-module.exports = ID3v2FrameReader;
