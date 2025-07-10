@@ -2,6 +2,16 @@
 
 The ESmodules version of https://github.com/aadsm/jsmediatags
 
+## How to use
+
+```javascript
+import { MediaTags } from "https://code4fukui.github.io/jsmediatags-es/MediaTags.js";
+
+const bin = await Deno.readFile("./music-file.mp3");
+const tags = await MediaTags.decode(bin);
+console.log(tags);
+```
+
 ## Donations
 
 A few people have asked me about donations (or even crowdfunding). I would prefer you to consider making a donation to the ["Girls Who Code" NPO](https://www.classy.org/checkout/donation?eid=77372). If you do please send me a message so I can add you as a contributor.
@@ -19,20 +29,6 @@ A few people have asked me about donations (or even crowdfunding). I would prefe
   * ID3v2 (with unsynchronisation support!)
   * MP4
   * FLAC
-
-## How to use
-
-```javascript
-import { MediaTags } from "https://code4fukui.github.io/jsmediatags-es/MediaTags.js";
-
-const bin = await Deno.readFile("./music-file.mp3");
-const tags = await MediaTags.decode(bin);
-console.log(tags);
-```
-
-### Articles
-
-* [Cordova : lire les metadatas des mp3s avec jsmediatags](http://blog.luce.pro/2016/02/28/Phonegap-lire-les-metadatas-des-mp3s-avec-jsmediatags/)
 
 ## Documentation
 
