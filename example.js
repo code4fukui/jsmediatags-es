@@ -1,12 +1,5 @@
-import * as jsmediatags from "./src/jsmediatags.js";
+import { MediaTags } from "./MediaTags.js";
 
 const bin = await Deno.readFile("./music-file.mp3");
-
-jsmediatags.read(bin, {
-  onSuccess: (tag) => {
-    console.log(tag);
-  },
-  onError: (error) => {
-    console.log(error);
-  }
-});
+const tags = await MediaTags.decode(bin);
+console.log(tags);
