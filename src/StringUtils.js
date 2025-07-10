@@ -25,7 +25,7 @@ export var StringUtils = {
     bytes,
     bigEndian,
     maxBytes
-  ): DecodedString {
+  ) { // DecodedString
     var ix = 0;
     var offset1 = 1, offset2 = 0;
 
@@ -67,7 +67,7 @@ export var StringUtils = {
   readUTF8String: function(
     bytes,
     maxBytes
-  ): DecodedString {
+  ) { // : DecodedString
     var ix = 0;
     maxBytes = Math.min(maxBytes||bytes.length, bytes.length);
 
@@ -106,7 +106,7 @@ export var StringUtils = {
   readNullTerminatedString: function(
     bytes,
     maxBytes
-  ): DecodedString {
+  ) { // : DecodedString
     var arr = [];
     maxBytes = maxBytes || bytes.length;
     for ( var i = 0; i < maxBytes; ) {
