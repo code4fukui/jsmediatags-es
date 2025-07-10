@@ -1,9 +1,6 @@
 /**
  * @flow
  */
-'use strict';
-
-export type DecodedString = InternalDecodedString;
 
 class InternalDecodedString {
   _value: string;
@@ -21,7 +18,9 @@ class InternalDecodedString {
   }
 }
 
-var StringUtils = {
+export const DecodedString = InternalDecodedString;
+
+export var StringUtils = {
   readUTF16String: function(
     bytes: Array<number>,
     bigEndian: boolean,
@@ -120,5 +119,3 @@ var StringUtils = {
     return new InternalDecodedString(arr.join(""), i);
   }
 };
-
-module.exports = StringUtils;
