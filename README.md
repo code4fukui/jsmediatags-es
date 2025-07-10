@@ -1,8 +1,9 @@
-# JS MediaTags
+# JS MediaTags ESmodules
 
-The next version of https://github.com/aadsm/JavaScript-ID3-Reader.
+The ESmodules version of https://github.com/aadsm/jsmediatags
 
 ## Donations
+
 A few people have asked me about donations (or even crowdfunding). I would prefer you to consider making a donation to the ["Girls Who Code" NPO](https://www.classy.org/checkout/donation?eid=77372). If you do please send me a message so I can add you as a contributor.
 
 ## [Contributors](https://github.com/aadsm/jsmediatags/blob/master/CONTRIBUTORS.md)
@@ -12,12 +13,7 @@ A few people have asked me about donations (or even crowdfunding). I would prefe
 ## Current Support
 
 * File Readers
-  * NodeJS
-  * XMLHttpRequest
-  * Blob
-  * File
-  * Buffers/Arrays
-  * React Native
+  * Uint8Array
 * Tag Readers
   * ID3v1
   * ID3v2 (with unsynchronisation support!)
@@ -26,131 +22,12 @@ A few people have asked me about donations (or even crowdfunding). I would prefe
 
 ## How to use
 
-### NodeJS
-
-Run `npm install jsmediatags --save` to install.
-
 ```javascript
-// Simple API - will fetch all tags
-var jsmediatags = require("jsmediatags");
+import { MediaTags } from "https://code4fukui.github.io/jsmediatags-es/MediaTags.js";
 
-jsmediatags.read("./music-file.mp3", {
-  onSuccess: function(tag) {
-    console.log(tag);
-  },
-  onError: function(error) {
-    console.log(':(', error.type, error.info);
-  }
-});
-```
-
-```javascript
-// Advanced API
-var jsmediatags = require("jsmediatags");
-
-new jsmediatags.Reader("http://www.example.com/music-file.mp3")
-  .setTagsToRead(["title", "artist"])
-  .read({
-    onSuccess: function(tag) {
-      console.log(tag);
-    },
-    onError: function(error) {
-      console.log(':(', error.type, error.info);
-    }
-  });
-```
-
-### Browser
-
-Copy the [`dist/jsmediatags.min.js`](https://github.com/aadsm/jsmediatags/blob/master/dist/jsmediatags.min.js) file into your web application directory and include it with a script tag.
-This library is also available on cdnjs at https://cdnjs.com/libraries/jsmediatags.
-UMD will give you multiple usage options to use it:
-
-```javascript
-// As a global Object
-var jsmediatags = window.jsmediatags;
-```
-```javascript
-// As a CommonJS Module
-var jsmediatags = require("jsmediatags");
-```
-
-It supports loading files from remote hosts, Blob and File objects:
-```javascript
-// From remote host
-jsmediatags.read("http://www.example.com/music-file.mp3", {
-  onSuccess: function(tag) {
-    console.log(tag);
-  },
-  onError: function(error) {
-    console.log(error);
-  }
-});
-```
-
-Note that the URI has to include the scheme (e.g.: https://), as relative URIs are not supported.
-
-
-```javascript
-// From Blob
-jsmediatags.read(blob, ...);
-```
-```javascript
-// From File
-inputTypeFile.addEventListener("change", function(event) {
-  var file = event.target.files[0];
-  jsmediatags.read(file, ...);
-}, false);
-```
-
-You can find more about UMD usage options [here](http://www.forbeslindesay.co.uk/post/46324645400/standalone-browserify-builds).
-
-### React Native
-
-React Native support requires some additional dependencies:
-
-```bash
-npm install --save jsmediatags buffer react-native-fs
-```
-
-With these dependencies installed, usage with React Native should remain the
-same:
-
-```js
-const jsmediatags = require('jsmediatags');
-
-new jsmediatags.Reader('/path/to/song.mp3')
-  .read({
-    onSuccess: (tag) => {
-      console.log('Success!');
-      console.log(tag);
-    },
-    onError: (error) => {
-      console.log('Error');
-      console.log(error);
-    }
-});
-
-// Or wrap it with a promise
-new Promise((resolve, reject) => {
-  new jsmediatags.Reader('/path/to/song.mp3')
-    .read({
-      onSuccess: (tag) => {
-        console.log('Success!');
-        resolve(tag);
-      },
-      onError: (error) => {
-        console.log('Error');
-        reject(error);
-      }
-  });
-})
-  .then(tagInfo => {
-    // handle the onSuccess return
-  })
-  .catch(error => {
-    // handle errors
-  });
+const bin = await Deno.readFile("./music-file.mp3");
+const tags = await MediaTags.decode(bin);
+console.log(tags);
 ```
 
 ### Articles
@@ -160,7 +37,7 @@ new Promise((resolve, reject) => {
 ## Documentation
 
 ### The Output
-This is an example of the object passed to the `jsmediatags.read`'s `onSuccess` callback.
+This is an example of the object returned from the `MediaTags.decode`.
 
 #### ID3v2
 ```javascript
@@ -202,7 +79,7 @@ This is an example of the object passed to the `jsmediatags.read`'s `onSuccess` 
 }
 ```
 
-#### MP4
+#### MP4 (not supported yet)
 ```javascript
 {
   type: "MP4",
@@ -219,7 +96,7 @@ This is an example of the object passed to the `jsmediatags.read`'s `onSuccess` 
 }
 ```
 
-#### FLAC
+#### FLAC (not supported yet)
 ```javascript
 {
   type: "FLAC",
@@ -322,54 +199,6 @@ New file and tag readers can be implemented by extending the MediaFileReader and
 
 ## Development
 
-Source code uses Flow for type checking meaning that a compilation step is needed to remove all type annotations.
-When using this library with NodeJS you can use the runtime compilation that is supported by babel. It will be slightly slower but no compilation step is required.
-
-### NodeJS (With Runtime Compilation)
-
-```javascript
-require('babel-core/register');
-
-var NodeFileReader = require('./src/NodeFileReader');
-var ID3v2TagReader = require('./src/ID3v2TagReader');
-...
-```
-
-### NodeJS (With Compiled Code (faster))
-
-Run `npm run build` to generate proper JavaScript code into the `build2` directory.
-
-```javascript
-var NodeFileReader = require('./build2/NodeFileReader');
-var ID3v2TagReader = require('./build2/ID3v2TagReader');
-...
-```
-
-Run `npm run watch` to automatically recompile the source code whenever a file is changed.
-
-### Browser
-
-Run `npm run dist` to generate a UMD version of this library that is ready to be used in a browser.
-
-Two packages are created for the browser: `dist/jsmediatags.min.js` and `dist/jsmediatags.js`. One is a minimized version that is meant to be used in production and the other a regular version meant to be used for debugging.
-
-Run `npm run dist-watch` to recompile and browserify the source code whenever a file is changed. This will only regenerate the `dist/jsmediatags.js` file.
-
-### New File Readers
-
-Extend the `MediaFileReader` class to implement a new file reader. Methods to implement are:
-
-* init
-* loadRange
-* getBytesLoaded
-* getByteAt
-
-Current Implementations:
-* [NodeFileReader](https://github.com/aadsm/jsmediatags/blob/master/src/NodeFileReader.js) (NodeJS)
-* [XhrFileReader](https://github.com/aadsm/jsmediatags/blob/master/src/XhrFileReader.js) (Browser and NodeJS)
-* [BlobFileReader](https://github.com/aadsm/jsmediatags/blob/master/src/BlobFileReader.js) (Blob and File)
-
-
 ### New Tag Readers
 
 Extend the `MediaTagReader` class to implement a new tag reader. Methods to implement are:
@@ -384,7 +213,7 @@ Current Implementations:
 * [ID3v2TagReader](https://github.com/aadsm/jsmediatags/blob/master/src/ID3v2TagReader.js)
 * [MP4TagReader](https://github.com/aadsm/jsmediatags/blob/master/src/MP4TagReader.js)
 
-### Unit Testing
+### Unit Testing (not supported yet)
 
 Jest is the framework used. Run `npm test` to execute all the tests.
 
