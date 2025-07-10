@@ -1,7 +1,3 @@
-/**
- * @flow
- */
-
 var MediaFileReader = require('./MediaFileReader');
 
 export type CallbackType = {

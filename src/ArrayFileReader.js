@@ -1,7 +1,3 @@
-/**
- * @flow
- */
-
 import { MediaFileReader } from './MediaFileReader.js';
 
 /*
