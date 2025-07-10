@@ -1,22 +1,12 @@
 /**
  * @flow
  */
-'use strict';
 
-const MediaFileReader = require('./MediaFileReader');
+export class MediaTagReader {
+  _mediaFileReader;
+  _tags; //  ?Array<string>;
 
-import type {
-  CallbackType,
-  LoadCallbackType,
-  ByteRange,
-  TagType
-} from './FlowTypes';
-
-class MediaTagReader {
-  _mediaFileReader: MediaFileReader;
-  _tags: ?Array<string>;
-
-  constructor(mediaFileReader: MediaFileReader) {
+  constructor(mediaFileReader) { // : MediaFileReader
     this._mediaFileReader = mediaFileReader;
     this._tags = null;
   }
@@ -26,7 +16,7 @@ class MediaTagReader {
    * _canReadTagFormat in order to identify if the file contains tag
    * information that can be read.
    */
-  static getTagIdentifierByteRange(): ByteRange {
+  static getTagIdentifierByteRange() { // : ByteRange
     throw new Error("Must implement");
   }
 
@@ -35,16 +25,16 @@ class MediaTagReader {
    * getTagIdentifierByteRange) this function checks if it can read the tag
    * format or not.
    */
-  static canReadTagFormat(tagIdentifier: Array<number>): boolean {
+  static canReadTagFormat(tagIdentifier) {
     throw new Error("Must implement");
   }
 
-  setTagsToRead(tags: Array<string>): MediaTagReader {
+  setTagsToRead(tags) { // : MediaTagReader
     this._tags = tags;
     return this;
   }
 
-  read(callbacks: CallbackType) {
+  read(callbacks) { // : CallbackType
     var self = this;
 
     this._mediaFileReader.init({
@@ -73,7 +63,7 @@ class MediaTagReader {
     });
   }
 
-  getShortcuts(): {[key: string]: (string|Array<string>)} {
+  getShortcuts() { // : {[key]: (string|Array<string>)}
     return {};
   }
 
@@ -81,20 +71,23 @@ class MediaTagReader {
    * Load the necessary bytes from the media file.
    */
   _loadData(
-    mediaFileReader: MediaFileReader,
-    callbacks: LoadCallbackType
-  ): void {
+    mediaFileReader, //: MediaFileReader,
+    callbacks, // : LoadCallbackType
+  ) {
     throw new Error("Must implement _loadData function");
   }
 
   /**
    * Parse the loaded data to read the media tags.
    */
-  _parseData(mediaFileReader: MediaFileReader, tags: ?Array<string>): TagType {
+  _parseData(
+      mediaFileReader, //: MediaFileReader
+      tags, // : ?Array<string>
+    ) { // : TagType
     throw new Error("Must implement _parseData function");
   }
 
-  _expandShortcutTags(tagsWithShortcuts: ?Array<string>): ?Array<string> {
+  _expandShortcutTags(tagsWithShortcuts) { // : ?Array<string> -> : ?Array<string>
     if (!tagsWithShortcuts) {
       return null;
     }
@@ -109,4 +102,3 @@ class MediaTagReader {
   }
 }
 
-module.exports = MediaTagReader;

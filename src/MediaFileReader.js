@@ -2,7 +2,7 @@
  * @flow
  */
 
-import { StringUtils, DecodedString } from './StringUtils.js';
+import { StringUtils } from './StringUtils.js';
 
 
 export class MediaFileReader {
