@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<title>jsmediatags-es demo</title></head><body>
+<h1>jsmediatags-es demo</h1>
+<input type=file id=in_file><br>
+<br>
+<div id=div_result></div>
+<hr>
+<a href=https://github.com/code4fukui/jsmediatags-es/>src on GitHub</a><br>
+
+<script type="module">
+import { MediaTags } from "./MediaTags.js";
+
+const maskBin = (obj) => {
+  for (const name in obj) {
+    const v = obj[name];
+    if (name == "data") {
+      obj[name] = `*bin masked* length: ` + v.length;
+    } else if (typeof v == "object") {
+      maskBin(v);
+    }
+  }
+};
+
+in_file.onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const bin = new Uint8Array(await file.arrayBuffer());
+  const tags = await MediaTags.decode(bin);
+  console.log(tags);
+  maskBin(tags);
+  div_result.textContent = JSON.stringify(tags, null, 2);
+};
+</script>
+
+<style>
+#div_result {
+  white-space: pre-wrap;
+  padding: 1em;
+  border: 1px solid gray;
+}
+</style>
+
+</body></html>
