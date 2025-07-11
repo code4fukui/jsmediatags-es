@@ -1,0 +1,43 @@
+{
+  "version": "5",
+  "remote": {
+    "https://code4fukui.github.io/browser-id3-writer/src/ID3Writer.mjs": "d389814f34d9fb4ff25d71d31b2e4c616acfea6dcb304b7852f2cbd4826f59f9",
+    "https://code4fukui.github.io/browser-id3-writer/src/encoder.mjs": "d00d78e0304e1859a88ad9938993d9cdb1343410e7e03a10889bacdaddefdb49",
+    "https://code4fukui.github.io/browser-id3-writer/src/signatures.mjs": "a38f2ef2cdba1ea1c3c5b4057092e6492ef2438b2afe7f8c978293472ddc747f",
+    "https://code4fukui.github.io/browser-id3-writer/src/sizes.mjs": "7666dba59a907a617ea97fdf017f28c6725dc9272c475b9425aefac12a5f1e75",
+    "https://code4fukui.github.io/browser-id3-writer/src/transform.mjs": "07a4e0dd0e853379a8ce0823eb7ed04155280b07daa3e3f0e6a01d9865aa53a6",
+    "https://code4fukui.github.io/jsmediatags-es/MediaTags.js": "d291aa42e57986711e9e54141ccce74b1f1fad408a57d083daed8c6bcd9d3b80",
+    "https://code4fukui.github.io/jsmediatags-es/src/ArrayFileReader.js": "78b500b79db7ba868574719052f6f40a125d64b6b4472ce847ced71a1533f3fd",
+    "https://code4fukui.github.io/jsmediatags-es/src/ID3v1TagReader.js": "ebb55966968b48176ef3e1ede4dc560def1afc7ae34721f55283a75de4c8ff39",
+    "https://code4fukui.github.io/jsmediatags-es/src/ID3v2FrameReader.js": "4f1cd7542cfe58b6a8f0bd7ec9238294b3ab439989a28139dc71b11e8be89ec7",
+    "https://code4fukui.github.io/jsmediatags-es/src/ID3v2TagReader.js": "33b58ecaac2576fd8960274635b7c3bd1138d9849fd8cc4a9e382f03f31a6e6a",
+    "https://code4fukui.github.io/jsmediatags-es/src/MediaFileReader.js": "1d3ee57e7daeab1abf096cefa1668fd40b34e69610feabcff802a4e6fdf3efc5",
+    "https://code4fukui.github.io/jsmediatags-es/src/MediaTagReader.js": "c79d3a35d9c7e75a589be81fcb81aea30c8e6583ff0873b23bcf67875970fa03",
+    "https://code4fukui.github.io/jsmediatags-es/src/StringUtils.js": "dc5ddc4b1f72d562554ede88e5f7f781410eb8cd385282d4e3c98a1379d9d439",
+    "https://code4fukui.github.io/jsmediatags-es/src/jsmediatags.js": "ca85e1df6fb30fd76fc3fadbe5480d333f342fd451d92703e15a681a3f742598"
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@babel/cli@^7.12.16",
+        "npm:@babel/core@^7.5.0",
+        "npm:@babel/plugin-proposal-class-properties@^7.5.0",
+        "npm:@babel/plugin-transform-block-scoping@^7.4.4",
+        "npm:@babel/plugin-transform-classes@^7.4.4",
+        "npm:@babel/plugin-transform-flow-strip-types@^7.4.4",
+        "npm:@babel/plugin-transform-modules-commonjs@^7.5.0",
+        "npm:@babel/preset-env@^7.5.0",
+        "npm:babel-jest@^26.6.3",
+        "npm:babelify@10",
+        "npm:browserify@^16.3.0",
+        "npm:flow-bin@~0.53.1",
+        "npm:google-closure-compiler@20170626.0.0",
+        "npm:jest-cli@^26.6.3",
+        "npm:react-native@0.64",
+        "npm:react@^16.2.0",
+        "npm:watchify@4",
+        "npm:xhr2@~0.1.4"
+      ]
+    }
+  }
+}

@@ -2,8 +2,11 @@
 
 - [jsmediatags-es](https://code4fukui.github.io/jsmediatags-es/) is a ID3 tags reader in JavaScript (ID3v1, ID3v2 and AAC) for MP3 / MP4(not yet) / FLAC(not yet).
 - The JavaScript/ESmodules version of [jsmediatags](https://github.com/aadsm/jsmediatags).
+- MediaTags.encode to write MediaTags with [browser-id3-writer](https://github.com/code4fukui/browser-id3-writer)
 
 ## How to use
+
+### decode
 
 ```javascript
 import { MediaTags } from "https://code4fukui.github.io/jsmediatags-es/MediaTags.js";
@@ -12,6 +15,18 @@ const bin = await Deno.readFile("./music-file.mp3");
 const tags = await MediaTags.decode(bin);
 console.log(tags);
 ```
+
+### encode
+
+```javascript
+import { MediaTags } from "https://code4fukui.github.io/jsmediatags-es/MediaTags.js";
+
+const bin = await Deno.readFile("./music-file.mp3");
+const tags = { title: "new_title", artist: "new_artist" };
+const bin2 = await MediaTags.encode(bin, tags);
+await Deno.writeFile("./music-file_dst.mp3", bin2);
+```
+
 
 ## Donations
 
