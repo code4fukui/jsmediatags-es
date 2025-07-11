@@ -35,7 +35,7 @@ export class MediaTags {
           description: value.description,
           data: value.data instanceof Uint8Array ? value.data : new Uint8Array(value.data),
         });
-      } else if (name == "TPE1") {
+      } else if (name == "TPE1" || name == "TCOM" || name == "TCON") {
         if (typeof value == "string") {
           writer.setFrame(name, [value]);
         } else {
