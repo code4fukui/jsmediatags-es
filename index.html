@@ -13,7 +13,7 @@ import { MediaTags } from "./MediaTags.js";
 const maskBin = (obj) => {
   for (const name in obj) {
     const v = obj[name];
-    if (name == "data") {
+    if (name == "data" && Array.isArray(v)) {
       obj[name] = `*bin masked* length: ` + v.length;
     } else if (typeof v == "object") {
       maskBin(v);
