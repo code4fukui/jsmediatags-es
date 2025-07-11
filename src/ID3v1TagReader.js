@@ -70,7 +70,7 @@ export class ID3v1TagReader extends MediaTagReader {
   }
 }
 
-var GENRES = [
+export var GENRES = [
   "Blues","Classic Rock","Country","Dance","Disco","Funk","Grunge",
   "Hip-Hop","Jazz","Metal","New Age","Oldies","Other","Pop","R&B",
   "Rap","Reggae","Rock","Techno","Industrial","Alternative","Ska",

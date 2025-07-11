@@ -22,11 +22,11 @@ console.log(tags);
 import { MediaTags } from "https://code4fukui.github.io/jsmediatags-es/MediaTags.js";
 
 const bin = await Deno.readFile("./music-file.mp3");
-const tags = { title: "new_title", artist: "new_artist" };
+const tags = { title: "new_title", artist: "new_artist", album: "new_album", genre: "Rock" };
 const bin2 = await MediaTags.encode(bin, tags);
 await Deno.writeFile("./music-file_dst.mp3", bin2);
 ```
-
+- genre: [genre-id3v1.csv](genre-id3v1.csv)
 
 ## Donations
 
