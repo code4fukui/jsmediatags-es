@@ -1,8 +1,8 @@
-# JS MediaTags ESmodules version
+# jsmediatags-es
 
-- [jsmediatags-es](https://code4fukui.github.io/jsmediatags-es/) is a ID3 tags reader in JavaScript (ID3v1, ID3v2 and AAC) for MP3 / MP4(not yet) / FLAC(not yet).
-- The JavaScript/ESmodules version of [jsmediatags](https://github.com/aadsm/jsmediatags).
-- MediaTags.encode to write MediaTags with [browser-id3-writer](https://github.com/code4fukui/browser-id3-writer)
+- [jsmediatags-es](https://code4fukui.github.io/jsmediatags-es/) is a JavaScript (ESmodules) version of the ID3 tags reader [jsmediatags](https://github.com/aadsm/jsmediatags).
+- It can read ID3v1, ID3v2 and AAC tags from MP3 and MP4 (not yet) files.
+- It can also write MediaTags with [browser-id3-writer](https://github.com/code4fukui/browser-id3-writer).
 
 ## How to use
 
@@ -26,11 +26,12 @@ const tags = { title: "new_title", artist: "new_artist", album: "new_album", gen
 const bin2 = await MediaTags.encode(bin, tags);
 await Deno.writeFile("./music-file_dst.mp3", bin2);
 ```
+
 - genre: [genre-id3v1.csv](genre-id3v1.csv)
 
 ## Donations
 
-A few people have asked me about donations (or even crowdfunding). I would prefer you to consider making a donation to the ["Girls Who Code" NPO](https://www.classy.org/checkout/donation?eid=77372). If you do please send me a message so I can add you as a contributor.
+A few people have asked me about donations. I would prefer you to consider making a donation to the ["Girls Who Code" NPO](https://www.classy.org/checkout/donation?eid=77372). If you do please send me a message so I can add you as a contributor.
 
 ## [Contributors](https://github.com/aadsm/jsmediatags/blob/master/CONTRIBUTORS.md)
 
@@ -123,24 +124,6 @@ This is an example of the object returned from the `MediaTags.decode`.
 }
 ```
 
-The `tags` property includes all tags that were found or specified to be read.
-Since each tag type (e.g.: ID3, MP4) uses different tag names for the same type of data (e.g.: the artist name) the most common tags are also available under human readable names (aka shortcuts). In this example, `artist` will point to `TPE1.data`, `album` to `TALB.data` and so forth.
-
-The expected tag object depends on the type of tag read (ID3, MP4, etc.) but they all share a common structure:
-
-```
-{
-  type: <the tag type: ID3, MP4, etc.>
-  tags: {
-    <shortcut name>: <points to a tags data>
-    <tag name>: {
-      id: <tag name>,
-      data: <the actual tag data>
-    }
-  }
-}
-```
-
 ### Shortcuts
 
 These are the supported shortcuts.
@@ -154,158 +137,3 @@ These are the supported shortcuts.
 * `genre`
 * `picture`
 * `lyrics`
-
-### Picture data
-
-The `picture` tag contains an array buffer of all the bytes of the album artwork image as well as the content type of the image. The data can be converted and displayed as an image using:
-
-```javascript
-const { data, format } = result.tags.picture;
-let base64String = "";
-for (const i = 0; i < data.length; i++) {
-  base64String += String.fromCharCode(data[i]);
-}
-img.src = `data:${data.format};base64,${window.btoa(base64String)}`;
-```
-
-### HTTP Access Control (CORS)
-
-When using HTTP [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) requests you need to make sure that the server is configured to receive `If-Modified-Since` and `Range` headers with the request.
-This can be configured by returning the `Access-Control-Allow-Headers` HTTP header with the OPTIONS request response.
-
-Similarly, you should also allow for the browser to read the `Content-Length` and `Content-Range` headers. This can be configured by returning the  `Access-Control-Expose-Headers` HTTP header.
-
-In short, the following headers are expected:
-```
-Access-Control-Allow-Headers: If-Modified-Since, Range
-Access-Control-Expose-Headers: Content-Length, Content-Range
-```
-
-This library still works without these options configured on the server. However it will download the entire file instead of only the necessary bytes for reading the tags.
-
-### File and Tag Readers
-
-This library uses file readers (MediaFileReader API) to read the file itself and media tag readers (MediaTagReader API) to parse the tags in the file.
-
-By default the library will automatically pick the most appropriate file reader depending on the file location. In the common case this will be the URL or local path where the file is located.
-
-A similar approach is taken for the tag reader. The most appropriate tag reader will be selected depending on the tag signature found in the file.
-
-However, you can specify exactly which file reader or tag reader to use using the advanced API.
-
-New file and tag readers can be implemented by extending the MediaFileReader and MediaTagReader classes. Check the `Development` section down bellow for more information.
-
-### Reference
-
-* `jsmediatags.Reader`
-  * `setTagsToRead(tags: Array<string>)` - Specify which tags to read
-  * `setFileReader(fileReader: typeof MediaFileReader)` - Use this particular file reader
-  * `setTagReader(tagReader: typeof MediaTagReader)` - Use this particular tag reader
-  * `read({onSuccess, onError})` - Read the tags.
-
-* `jsmediatags.Config`
-  * `addFileReader(fileReader: typeof MediaFileReader)` - Add a new file reader to the automatic detection system.
-  * `addTagReader(tagReader: typeof MediaTagReader)` - Add a new tag reader to the automatic detection system.
-  * `setDisallowedXhrHeaders(disallowedXhrHeaders: Array<string>)` - Prevent the library from using specific http headers. This can be useful when dealing with CORS enabled servers you don't control.
-  * `setXhrTimeoutInSec(timeoutInSec: number)` - Sets the timeout time for http requests. Set it to 0 for no timeout at all. It defaults to 30s.
-
-## Development
-
-### New Tag Readers
-
-Extend the `MediaTagReader` class to implement a new tag reader. Methods to implement are:
-
-* getTagIdentifierByteRange
-* canReadTagFormat
-* \_loadData
-* \_parseData
-
-Current Implementations:
-* [ID3v1TagReader](https://github.com/aadsm/jsmediatags/blob/master/src/ID3v1TagReader.js)
-* [ID3v2TagReader](https://github.com/aadsm/jsmediatags/blob/master/src/ID3v2TagReader.js)
-* [MP4TagReader](https://github.com/aadsm/jsmediatags/blob/master/src/MP4TagReader.js)
-
-### Unit Testing (not supported yet)
-
-Jest is the framework used. Run `npm test` to execute all the tests.
-
-## JavaScript-ID3-Reader
-If you want to migrate your project from [JavaScript-ID3-Reader](https://github.com/aadsm/JavaScript-ID3-Reader) to `jsmediatags` use the following guiding examples:
-
-### All tags
-**JavaScript-ID3-Reader:**
-```javascript
-ID3.loadTags("filename.mp3", function() {
-  var tags = ID3.getAllTags("filename.mp3");
-  alert(tags.artist + " - " + tags.title + ", " + tags.album);
-});
-```
-**jsmediatags:**
-```javascript
-jsmediatags.read("filename.mp3", {
-  onSuccess: function(tag) {
-    var tags = tag.tags;
-    alert(tags.artist + " - " + tags.title + ", " + tags.album);
-  }
-});
-```
-
-### Specific tags
-**JavaScript-ID3-Reader:**
-```javascript
-ID3.loadTags("filename.mp3", function() {
-  var tags = ID3.getAllTags("filename.mp3");
-  alert(tags.COMM.data + " - " + tags.TCON.data + ", " + tags.WXXX.data);
-},
-{tags: ["COMM", "TCON", "WXXX"]});
-```
-**jsmediatags:**
-```javascript
-new jsmediatags.Reader("filename.mp3")
-  .setTagsToRead(["COMM", "TCON", "WXXX"])
-  .read({
-    onSuccess: function(tag) {
-      var tags = tag.tags;
-      alert(tags.COMM.data + " - " + tags.TCON.data + ", " + tags.WXXX.data);
-    }
-  });
-```
-### Error handling
-**JavaScript-ID3-Reader:**
-```javascript
-ID3.loadTags("http://localhost/filename.mp3", function() {
-  var tags = ID3.getAllTags("http://localhost/filename.mp3");
-  alert(tags.comment + " - " + tags.track + ", " + tags.lyrics);
-},
-{
-  tags: ["comment", "track", "lyrics"],
-  onError: function(reason) {
-    if (reason.error === "xhr") {
-      console.log("There was a network error: ", reason.xhr);
-    }
-  }
-});
-```
-**jsmediatags:**
-```javascript
-new jsmediatags.Reader("filename.mp3")
-  .setTagsToRead(["comment", "track", "lyrics"])
-  .read({
-    onSuccess: function(tag) {
-      var tags = tag.tags;
-      alert(tags.comment + " - " + tags.track + ", " + tags.lyrics);
-    },
-    onError: function(error) {
-      if (error.type === "xhr") {
-        console.log("There was a network error: ", error.xhr);
-      }
-    }
-  });
-```
-
-## Goals
-
-* Improve the API of JavaScript-ID3-Reader
-* Improve the source code with readable code and Flow annotated types
-* Have unit tests
-* Support NodeJS
