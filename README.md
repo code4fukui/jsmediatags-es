@@ -1,5 +1,7 @@
 # jsmediatags-es
 
+> 日本語のREADMEはこちらです: [README.ja.md](README.ja.md)
+
 - [jsmediatags-es](https://code4fukui.github.io/jsmediatags-es/) is a JavaScript (ESmodules) version of the ID3 tags reader [jsmediatags](https://github.com/aadsm/jsmediatags).
 - It can read ID3v1, ID3v2 and AAC tags from MP3 and MP4 (not yet) files.
 - It can also write MediaTags with [browser-id3-writer](https://github.com/code4fukui/browser-id3-writer).

@@ -1,12 +1,12 @@
 # jsmediatags-es
 
-- [jsmediatags-es](https://code4fukui.github.io/jsmediatags-es/) は、MP3 / MP4(未対応) / FLAC(未対応)用のJavaScriptのID3タグリーダー(ID3v1、ID3v2、AAC)です。
+- [jsmediatags-es](https://code4fukui.github.io/jsmediatags-es/) は、MP3、MP4(未対応)、FLAC(未対応)ファイルのID3タグ(ID3v1、ID3v2、AAC)を読み書きするためのJavaScriptライブラリです。
 - [jsmediatags](https://github.com/aadsm/jsmediatags)のJavaScript/ESモジュールバージョンです。
-- [browser-id3-writer](https://github.com/code4fukui/browser-id3-writer)を使用してMediaTagsの書き込みが可能です。
+- [browser-id3-writer](https://github.com/code4fukui/browser-id3-writer)を使ってMediaTagsの書き込みが可能です。
 
 ## 使い方
 
-### デコード
+### 読み取り
 
 ```javascript
 import { MediaTags } from "https://code4fukui.github.io/jsmediatags-es/MediaTags.js";
@@ -16,7 +16,7 @@ const tags = await MediaTags.decode(bin);
 console.log(tags);
 ```
 
-### エンコード
+### 書き込み
 
 ```javascript
 import { MediaTags } from "https://code4fukui.github.io/jsmediatags-es/MediaTags.js";
@@ -26,7 +26,7 @@ const tags = { title: "new_title", artist: "new_artist", album: "new_album", gen
 const bin2 = await MediaTags.encode(bin, tags);
 await Deno.writeFile("./music-file_dst.mp3", bin2);
 ```
-- genre: [genre-id3v1.csv](genre-id3v1.csv)
+- ジャンル: [genre-id3v1.csv](genre-id3v1.csv)
 
 ## 寄付
 
