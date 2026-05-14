@@ -1,2 +1,6 @@
 .DS_Store
 music-file.mp3
+
+# auto-added by meta-ops
+node_modules/
+Thumbs.db
