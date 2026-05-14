@@ -1,311 +1,211 @@
-# JS MediaTags ESmodules version
+# jsmediatags-es
 
-- [jsmediatags-es](https://code4fukui.github.io/jsmediatags-es/) is a ID3 tags reader in JavaScript (ID3v1, ID3v2 and AAC) for MP3 / MP4(not yet) / FLAC(not yet).
-- The JavaScript/ESmodules version of [jsmediatags](https://github.com/aadsm/jsmediatags).
-- MediaTags.encode to write MediaTags with [browser-id3-writer](https://github.com/code4fukui/browser-id3-writer)
+[
+![deno module](https://shield.deno.dev/x/jsmediatags_es)
+](https://deno.land/x/jsmediatags_es)
 
-## How to use
+> 日本語のREADMEはこちらです: [README.ja.md](README.ja.md)
 
-### decode
+`jsmediatags-es` is an **ES Module version** of the popular [jsmediatags](https://github.com/aadsm/jsmediatags) library, optimized for modern environments like **Deno** and **browsers**. It provides a simple API to **read and write ID3v1/ID3v2 tags** in MP3 files by integrating the writing capabilities of [browser-id3-writer](https://github.com/code4fukui/browser-id3-writer).
+
+---
+
+## Demo
+
+Try the live demo to see it in action: **[jsmediatags-es Demo](https://code4fukui.github.io/jsmediatags-es/)**
+
+---
+
+## Features
+
+-   ✅ **Read & Write ID3 Tags**: Decode existing ID3v1/ID3v2 tags and encode new or modified tags back to the file.
+-   🚀 **ES Module Native**: Use directly in Deno or modern browsers with `import`—no build step required.
+-   ✨ **Simple API**: A clean, promise-based API with two primary methods: `MediaTags.decode()` and `MediaTags.encode()`.
+-   📦 **Pure JavaScript**: No server-side dependencies needed. Works entirely on the client-side.
+-   🏷️ **Shortcut Support**: Easily access and modify common tags like `title`, `artist`, `album`, `picture`, and `lyrics`.
+
+---
+
+## Usage
+
+The library is designed to work with `Uint8Array` data, making it compatible with file reading APIs in both Deno and the browser.
+
+### Deno
+
+#### Read (Decode) Tags
 
 ```javascript
 import { MediaTags } from "https://code4fukui.github.io/jsmediatags-es/MediaTags.js";
 
 const bin = await Deno.readFile("./music-file.mp3");
 const tags = await MediaTags.decode(bin);
+
 console.log(tags);
+// {
+//   type: "ID3",
+//   version: "2.3.0",
+//   tags: {
+//     title: "Song Title",
+//     artist: "Artist Name",
+//     album: "Album Name",
+//     ...
+//   }
+// }
 ```
 
-### encode
+#### Write (Encode) Tags
+
+This example writes new values for several common tags.
 
 ```javascript
 import { MediaTags } from "https://code4fukui.github.io/jsmediatags-es/MediaTags.js";
 
 const bin = await Deno.readFile("./music-file.mp3");
-const tags = { title: "new_title", artist: "new_artist", album: "new_album", genre: "Rock" };
-const bin2 = await MediaTags.encode(bin, tags);
-await Deno.writeFile("./music-file_dst.mp3", bin2);
-```
-- genre: [genre-id3v1.csv](genre-id3v1.csv)
+const newTags = {
+  title: "New Title",
+  artist: "New Artist",
+  album: "New Album",
+  genre: "Rock", // See genre-id3v1.csv for available genres
+};
 
-## Donations
-
-A few people have asked me about donations (or even crowdfunding). I would prefer you to consider making a donation to the ["Girls Who Code" NPO](https://www.classy.org/checkout/donation?eid=77372). If you do please send me a message so I can add you as a contributor.
-
-## [Contributors](https://github.com/aadsm/jsmediatags/blob/master/CONTRIBUTORS.md)
-
-## [Contributing](https://github.com/aadsm/jsmediatags/blob/master/CONTRIBUTING.md)
-
-## Current Support
-
-* File Readers
-  * Uint8Array
-* Tag Readers
-  * ID3v1
-  * ID3v2 (with unsynchronisation support!)
-  * MP4
-  * FLAC
-
-## Documentation
-
-### The Output
-This is an example of the object returned from the `MediaTags.decode`.
-
-#### ID3v2
-```javascript
-{
-  type: "ID3",
-  version: "2.4.0",
-  major: 4,
-  revision: 0,
-  tags: {
-    artist: "Sam, The Kid",
-    album: "Pratica(mente)",
-    track: "12",
-    TPE1: {
-      id: "TPE1",
-      size: 14,
-      description: "Lead performer(s)/Soloist(s)",
-      data: "Sam, The Kid"
-    },
-    TALB: {
-      id: "TALB",
-      size: 16,
-      description: "Album/Movie/Show title",
-      data: "Pratica(mente)"
-    },
-    TRCK: {
-      id: "TRCK",
-      size: 3,
-      description: "Track number/Position in set",
-      data: "12",
-    }
-  },
-  size: 34423,
-  flags: {
-    unsynchronisation: false,
-    extended_header: false,
-    experimental_indicator: false,
-    footer_present: false
-  }
-}
+const updatedBin = await MediaTags.encode(bin, newTags);
+await Deno.writeFile("./music-file_updated.mp3", updatedBin);
 ```
 
-#### MP4 (not supported yet)
-```javascript
-{
-  type: "MP4",
-  ftyp: "M4A",
-  version: 0,
-  tags: {
-    "©too": {
-      id: "©too",
-      size: 35,
-      description: 'Encoding Tool',
-      data: 'Lavf53.24.2'
-    }
-  }
-}
-```
+#### Read, Modify, and Write
 
-#### FLAC (not supported yet)
-```javascript
-{
-  type: "FLAC",
-  version: "1",
-  tags: {
-    title: "16/12/95",
-    artist: "Sam, The Kid",
-    album: "Pratica(mente)",
-    track: "12",
-    picture: ...
-  }
-}
-```
-
-The `tags` property includes all tags that were found or specified to be read.
-Since each tag type (e.g.: ID3, MP4) uses different tag names for the same type of data (e.g.: the artist name) the most common tags are also available under human readable names (aka shortcuts). In this example, `artist` will point to `TPE1.data`, `album` to `TALB.data` and so forth.
-
-The expected tag object depends on the type of tag read (ID3, MP4, etc.) but they all share a common structure:
-
-```
-{
-  type: <the tag type: ID3, MP4, etc.>
-  tags: {
-    <shortcut name>: <points to a tags data>
-    <tag name>: {
-      id: <tag name>,
-      data: <the actual tag data>
-    }
-  }
-}
-```
-
-### Shortcuts
-
-These are the supported shortcuts.
-
-* `title`
-* `artist`
-* `album`
-* `year`
-* `comment`
-* `track`
-* `genre`
-* `picture`
-* `lyrics`
-
-### Picture data
-
-The `picture` tag contains an array buffer of all the bytes of the album artwork image as well as the content type of the image. The data can be converted and displayed as an image using:
+A complete example showing how to read existing tags, modify them (including cover art and lyrics), and save the result.
 
 ```javascript
-const { data, format } = result.tags.picture;
-let base64String = "";
-for (const i = 0; i < data.length; i++) {
-  base64String += String.fromCharCode(data[i]);
-}
-img.src = `data:${data.format};base64,${window.btoa(base64String)}`;
+import { MediaTags } from "https://code4fukui.github.io/jsmediatags-es/MediaTags.js";
+
+// 1. Read the original MP3 file
+const bin = await Deno.readFile("./music-file.mp3");
+
+// 2. Decode the tags
+const tags = await MediaTags.decode(bin);
+
+// 3. Modify the tags object
+tags.tags.title = "A New Song Title";
+tags.tags.artist = "The ES Coders";
+tags.tags.album = "Module Magic";
+tags.tags.year = 2024;
+
+// Update the cover art (must be a Uint8Array)
+tags.tags.picture = {
+  description: "Cover",
+  data: await Deno.readFile("./cover.jpg"),
+};
+
+// Update the lyrics
+tags.tags.lyrics = {
+  language: "eng",
+  description: "Lyrics",
+  lyrics: "La la la, code is fun...",
+};
+
+// 4. Encode the modified tags back into a new binary
+const updatedBin = await MediaTags.encode(bin, tags);
+
+// 5. Write the new MP3 file
+await Deno.writeFile("./music-file_retouched.mp3", updatedBin);
+
+console.log("Tags updated successfully!");
 ```
 
-### HTTP Access Control (CORS)
+### Browser
 
-When using HTTP [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) requests you need to make sure that the server is configured to receive `If-Modified-Since` and `Range` headers with the request.
-This can be configured by returning the `Access-Control-Allow-Headers` HTTP header with the OPTIONS request response.
+You can use `jsmediatags-es` directly in the browser with an `<input type="file">`.
 
-Similarly, you should also allow for the browser to read the `Content-Length` and `Content-Range` headers. This can be configured by returning the  `Access-Control-Expose-Headers` HTTP header.
+#### Read Tags from a File Input
 
-In short, the following headers are expected:
-```
-Access-Control-Allow-Headers: If-Modified-Since, Range
-Access-Control-Expose-Headers: Content-Length, Content-Range
-```
+```html
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Read MP3 Tags</h1>
+  <input type="file" id="file-input" accept=".mp3" />
+  <pre id="output"></pre>
 
-This library still works without these options configured on the server. However it will download the entire file instead of only the necessary bytes for reading the tags.
+  <script type="module">
+    import { MediaTags } from "https://code4fukui.github.io/jsmediatags-es/MediaTags.js";
 
-### File and Tag Readers
+    const fileInput = document.getElementById('file-input');
+    const output = document.getElementById('output');
 
-This library uses file readers (MediaFileReader API) to read the file itself and media tag readers (MediaTagReader API) to parse the tags in the file.
+    fileInput.addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
 
-By default the library will automatically pick the most appropriate file reader depending on the file location. In the common case this will be the URL or local path where the file is located.
-
-A similar approach is taken for the tag reader. The most appropriate tag reader will be selected depending on the tag signature found in the file.
-
-However, you can specify exactly which file reader or tag reader to use using the advanced API.
-
-New file and tag readers can be implemented by extending the MediaFileReader and MediaTagReader classes. Check the `Development` section down bellow for more information.
-
-### Reference
-
-* `jsmediatags.Reader`
-  * `setTagsToRead(tags: Array<string>)` - Specify which tags to read
-  * `setFileReader(fileReader: typeof MediaFileReader)` - Use this particular file reader
-  * `setTagReader(tagReader: typeof MediaTagReader)` - Use this particular tag reader
-  * `read({onSuccess, onError})` - Read the tags.
-
-* `jsmediatags.Config`
-  * `addFileReader(fileReader: typeof MediaFileReader)` - Add a new file reader to the automatic detection system.
-  * `addTagReader(tagReader: typeof MediaTagReader)` - Add a new tag reader to the automatic detection system.
-  * `setDisallowedXhrHeaders(disallowedXhrHeaders: Array<string>)` - Prevent the library from using specific http headers. This can be useful when dealing with CORS enabled servers you don't control.
-  * `setXhrTimeoutInSec(timeoutInSec: number)` - Sets the timeout time for http requests. Set it to 0 for no timeout at all. It defaults to 30s.
-
-## Development
-
-### New Tag Readers
-
-Extend the `MediaTagReader` class to implement a new tag reader. Methods to implement are:
-
-* getTagIdentifierByteRange
-* canReadTagFormat
-* \_loadData
-* \_parseData
-
-Current Implementations:
-* [ID3v1TagReader](https://github.com/aadsm/jsmediatags/blob/master/src/ID3v1TagReader.js)
-* [ID3v2TagReader](https://github.com/aadsm/jsmediatags/blob/master/src/ID3v2TagReader.js)
-* [MP4TagReader](https://github.com/aadsm/jsmediatags/blob/master/src/MP4TagReader.js)
-
-### Unit Testing (not supported yet)
-
-Jest is the framework used. Run `npm test` to execute all the tests.
-
-## JavaScript-ID3-Reader
-If you want to migrate your project from [JavaScript-ID3-Reader](https://github.com/aadsm/JavaScript-ID3-Reader) to `jsmediatags` use the following guiding examples:
-
-### All tags
-**JavaScript-ID3-Reader:**
-```javascript
-ID3.loadTags("filename.mp3", function() {
-  var tags = ID3.getAllTags("filename.mp3");
-  alert(tags.artist + " - " + tags.title + ", " + tags.album);
-});
-```
-**jsmediatags:**
-```javascript
-jsmediatags.read("filename.mp3", {
-  onSuccess: function(tag) {
-    var tags = tag.tags;
-    alert(tags.artist + " - " + tags.title + ", " + tags.album);
-  }
-});
-```
-
-### Specific tags
-**JavaScript-ID3-Reader:**
-```javascript
-ID3.loadTags("filename.mp3", function() {
-  var tags = ID3.getAllTags("filename.mp3");
-  alert(tags.COMM.data + " - " + tags.TCON.data + ", " + tags.WXXX.data);
-},
-{tags: ["COMM", "TCON", "WXXX"]});
-```
-**jsmediatags:**
-```javascript
-new jsmediatags.Reader("filename.mp3")
-  .setTagsToRead(["COMM", "TCON", "WXXX"])
-  .read({
-    onSuccess: function(tag) {
-      var tags = tag.tags;
-      alert(tags.COMM.data + " - " + tags.TCON.data + ", " + tags.WXXX.data);
-    }
-  });
-```
-### Error handling
-**JavaScript-ID3-Reader:**
-```javascript
-ID3.loadTags("http://localhost/filename.mp3", function() {
-  var tags = ID3.getAllTags("http://localhost/filename.mp3");
-  alert(tags.comment + " - " + tags.track + ", " + tags.lyrics);
-},
-{
-  tags: ["comment", "track", "lyrics"],
-  onError: function(reason) {
-    if (reason.error === "xhr") {
-      console.log("There was a network error: ", reason.xhr);
-    }
-  }
-});
-```
-**jsmediatags:**
-```javascript
-new jsmediatags.Reader("filename.mp3")
-  .setTagsToRead(["comment", "track", "lyrics"])
-  .read({
-    onSuccess: function(tag) {
-      var tags = tag.tags;
-      alert(tags.comment + " - " + tags.track + ", " + tags.lyrics);
-    },
-    onError: function(error) {
-      if (error.type === "xhr") {
-        console.log("There was a network error: ", error.xhr);
+      try {
+        const buffer = await file.arrayBuffer();
+        const bin = new Uint8Array(buffer);
+        const tags = await MediaTags.decode(bin);
+        output.textContent = JSON.stringify(tags, null, 2);
+      } catch (err) {
+        output.textContent = "Error reading tags: " + err.message;
       }
-    }
-  });
+    });
+  </script>
+</body>
+</html>
 ```
 
-## Goals
+---
 
-* Improve the API of JavaScript-ID3-Reader
-* Improve the source code with readable code and Flow annotated types
-* Have unit tests
-* Support NodeJS
+## API Reference
+
+### `MediaTags.decode(data)`
+
+Asynchronously decodes ID3 tags from an MP3 file's binary data.
+
+-   **`data`** (`Uint8Array`): The binary content of the MP3 file.
+-   **Returns**: `Promise<object>` A promise that resolves to the tag object.
+
+### `MediaTags.encode(data, tags)`
+
+Asynchronously encodes new or modified tags into an MP3 file's binary data.
+
+-   **`data`** (`Uint8Array`): The original binary content of the MP3 file.
+-   **`tags`** (`object`): An object containing the tags to write. This can be the full object returned by `decode` or a simple object with shortcut keys (`title`, `artist`, etc.).
+-   **Returns**: `Promise<Uint8Array>` A promise that resolves to the new binary content with the updated tags.
+
+### Tag Structure
+
+The `tags` object for both decoding and encoding uses simple key-value pairs for common frames.
+
+**Simple object for encoding:**
+
+```javascript
+const simpleTags = {
+  title: "My Song",
+  artist: "An Artist",
+  album: "Greatest Hits",
+  year: 2024,
+  comment: "A comment",
+  track: 5,
+  genre: "Pop",
+  picture: { // Optional
+    description: "album cover",
+    data: imageUint8Array, // The image data as a Uint8Array
+  },
+  lyrics: { // Optional
+    language: "eng",
+    description: "song lyrics",
+    lyrics: "Never gonna give you up...",
+  }
+};
+```
+
+---
+
+## Acknowledgements
+
+This library is a modern ESM wrapper that combines the power of two great projects:
+
+-   **Tag Reading**: [jsmediatags](https://github.com/aadsm/jsmediatags) by António Afonso, Jacob Seidelin, and contributors.
+-   **Tag Writing**: [browser-id3-writer](https://github.com/code4fukui/browser-id3-writer) by code4fukui.
+
+## License
+
+This project is available under the BSD-3-Clause license. See the original `package.json` for full license details.
